@@ -2,10 +2,13 @@ package com.alex.inventoryservice;
 
 import com.alex.inventoryservice.model.Inventory;
 import com.alex.inventoryservice.repository.InventoryRepository;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
 
 @SpringBootApplication
 public class InventoryServiceApplication {

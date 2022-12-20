@@ -6,11 +6,9 @@ import com.alex.orderservice.model.OrderLineItems;
 import com.alex.orderservice.repository.OrderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -33,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles(profiles = "test")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class OrderServiceApplicationTests {
 
 	@Autowired
@@ -60,6 +59,7 @@ class OrderServiceApplicationTests {
 	private OrderRepository orderRepository;
 
 	@Test
+	@Order(1)
 	void shouldPlaceOrder() throws Exception {
 		log.info("Starting Test by clearing DB...");
 //		orderRepository.deleteAll();
@@ -72,6 +72,12 @@ class OrderServiceApplicationTests {
 				.toList();
 		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
 		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+		// Order 1
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(orderRequestString))
+				.andExpect(status().isCreated());
+		// Order 2
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(orderRequestString))
@@ -79,14 +85,13 @@ class OrderServiceApplicationTests {
 	}
 
 	@Test
+	@Order(2)
 	void shouldGetAllOrders() throws Exception {
 		log.info("Hitting /api/order with GET Request...");
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/order"))
 				.andExpect(status().isOk());
 		Long count = orderRepository.count();
 		log.info("Got All {} Orders", count);
-
-//		orderRepository.deleteAll();
 	}
 
 	private OrderRequest getOrderRequest() {
@@ -132,6 +137,7 @@ class OrderServiceApplicationTests {
 
 
 	@Test
+	@Order(3)
 	void shouldDeleteAllOrders() throws Exception {
 		log.info("Hitting /api/order with DELETE Request...");
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/order"))
