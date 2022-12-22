@@ -63,19 +63,19 @@ class InventoryServiceApplicationTests {
 	@Autowired
 	private InventoryService inventoryService;
 
-	@Test
-	void shouldCheckStockBySkuCode() throws Exception {
+//	@Test
+//	void shouldCheckStockBySkuCode() throws Exception {
+//
+//		List<Inventory> inventories = inventoryRepository.findAll();
+//		for (Inventory inventory : inventories) {
+//
+//			mockMvc.perform(MockMvcRequestBuilders.get("/api/inventory/{sku-code}", inventory.getSkuCode()))
+//					.andExpect(status().isOk());
+////			log.info("Got Inventory with Sku-Code {}", inventory.getSkuCode());
+//
+//		}
 
-		List<Inventory> inventories = inventoryRepository.findAll();
-		for (Inventory inventory : inventories) {
-
-			mockMvc.perform(MockMvcRequestBuilders.get("/api/inventory/{sku-code}", inventory.getSkuCode()))
-					.andExpect(status().isOk());
-//			log.info("Got Inventory with Sku-Code {}", inventory.getSkuCode());
-
-		}
 
 
-
-	}
+//	}
 }

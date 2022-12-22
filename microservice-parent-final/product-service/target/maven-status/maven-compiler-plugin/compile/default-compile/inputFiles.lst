@@ -1,9 +1,9 @@
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\controller\ControllerAdvisor.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\service\ProductNotFoundException.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\repository\ProductRepository.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\model\Product.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\dto\ProductResponse.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\ProductServiceApplication.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\service\ProductService.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\dto\ProductRequest.java
-H:\Projects\MS Tutorial\microservice-parent-final\product-service\src\main\java\com\alex\productservice\controller\ProductController.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\controller\ProductController.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\model\Product.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\service\ProductService.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\repository\ProductRepository.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\dto\ProductResponse.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\dto\ProductRequest.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\ProductServiceApplication.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\service\ProductNotFoundException.java
+H:\Projects\microservices-parent-final\microservice-parent-final\product-service\src\main\java\com\alex\productservice\controller\ControllerAdvisor.java

@@ -1,21 +1,19 @@
 package com.alex.orderservice.service;
 
-import com.alex.orderservice.config.WebClientConfig;
+import com.alex.orderservice.dto.InventoryResponse;
 import com.alex.orderservice.dto.OrderLineItemsDto;
 import com.alex.orderservice.dto.OrderRequest;
-import com.alex.orderservice.dto.OrderResponse.OrderResponse;
+import com.alex.orderservice.dto.OrderResponse;
 import com.alex.orderservice.model.Order;
 import com.alex.orderservice.model.OrderLineItems;
 import com.alex.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.nio.file.WatchEvent;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,23 +47,29 @@ public class OrderService {
         // Set the order.orderLineItemsList field to the list you just mapped
         order.setOrderLineItemsList(orderLineItems);
 
+        // Create list of Sku Codes present in the order
         List<String> skuCodes = order.getOrderLineItemsList().stream()
                 .map(OrderLineItems::getSkuCode)
                 .toList();
 
         // Check inventory services to see if sku-code is in stock
-        Boolean result = webClient.get().uri("https://localhost:8082/api/inventory",
-                uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
+        InventoryResponse[] inventoryResponseArray = webClient.get().uri("http://localhost:8082/api/inventory",
+                uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
                 .retrieve()
-                .bodyToMono(Boolean.class)
+                .bodyToMono(InventoryResponse[].class)
                 .block();
-        if (result) {
+
+        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
+                                            .allMatch(InventoryResponse::isInStock);
+
+
+        if (allProductsInStock) {
             orderRepository.save(order);
-            log.info("Item is in stock, saving order.");
+            log.info("All Items is in stock, saving order.");
+            log.info("Order Number: {} was placed", order.getOrderNumber());
         } else {
             throw new IllegalArgumentException("Product is out of stock. Check Later");
         }
-        log.info("Order Number: {} was placed", order.getOrderNumber());
     }
 
     public List<OrderResponse> getAllOrders() {

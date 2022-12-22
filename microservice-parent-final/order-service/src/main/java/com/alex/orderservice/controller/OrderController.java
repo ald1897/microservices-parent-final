@@ -1,7 +1,7 @@
 package com.alex.orderservice.controller;
 
 import com.alex.orderservice.dto.OrderRequest;
-import com.alex.orderservice.dto.OrderResponse.OrderResponse;
+import com.alex.orderservice.dto.OrderResponse;
 import com.alex.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

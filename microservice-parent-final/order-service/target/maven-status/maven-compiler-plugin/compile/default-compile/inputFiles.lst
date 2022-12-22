@@ -1,9 +1,11 @@
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\repository\OrderRepository.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\controller\OrderController.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\model\Order.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\service\OrderService.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderResponse\OrderResponse.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderLineItemsDto.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderRequest.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\model\OrderLineItems.java
-H:\Projects\MS Tutorial\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\OrderServiceApplication.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\InventoryResponse.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\repository\OrderRepository.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderRequest.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderLineItemsDto.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\model\Order.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderResponse.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\OrderServiceApplication.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\model\OrderLineItems.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\config\WebClientConfig.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\service\OrderService.java
+H:\Projects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\controller\OrderController.java

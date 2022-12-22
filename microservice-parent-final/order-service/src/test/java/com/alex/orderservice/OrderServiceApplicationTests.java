@@ -58,31 +58,31 @@ class OrderServiceApplicationTests {
 	@Autowired
 	private OrderRepository orderRepository;
 
-	@Test
-	@Order(1)
-	void shouldPlaceOrder() throws Exception {
-		log.info("Starting Test by clearing DB...");
-//		orderRepository.deleteAll();
-		log.info("Get Order Request...");
-		OrderRequest orderRequest = getOrderRequest();
-		log.info("Setting orderLineItems...");
-		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-				.stream()
-				.map(this::mapToDto)
-				.toList();
-		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
-		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
-		// Order 1
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(orderRequestString))
-				.andExpect(status().isCreated());
-		// Order 2
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(orderRequestString))
-				.andExpect(status().isCreated());
-	}
+//	@Test
+//	@Order(1)
+//	void shouldPlaceOrder() throws Exception {
+//		log.info("Starting Test by clearing DB...");
+////		orderRepository.deleteAll();
+//		log.info("Get Order Request...");
+//		OrderRequest orderRequest = getOrderRequest();
+//		log.info("Setting orderLineItems...");
+//		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+//				.stream()
+//				.map(this::mapToDto)
+//				.toList();
+//		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
+//		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+//		// Order 1
+//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+//						.contentType(MediaType.APPLICATION_JSON)
+//						.content(orderRequestString))
+//				.andExpect(status().isCreated());
+//		// Order 2
+//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+//						.contentType(MediaType.APPLICATION_JSON)
+//						.content(orderRequestString))
+//				.andExpect(status().isCreated());
+//	}
 
 	@Test
 	@Order(2)
