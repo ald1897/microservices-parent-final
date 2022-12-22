@@ -1,5 +1,6 @@
 package com.alex.orderservice.service;
 
+import com.alex.orderservice.config.WebClientConfig;
 import com.alex.orderservice.dto.OrderLineItemsDto;
 import com.alex.orderservice.dto.OrderRequest;
 import com.alex.orderservice.dto.OrderResponse.OrderResponse;
@@ -12,7 +13,9 @@ import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import java.nio.file.WatchEvent;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +27,8 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+
+    private final WebClient webClient;
 
     //placeOrder Method takes in the OrderRequest object passed in from the controller
     public void placeOrder(OrderRequest orderRequest){
@@ -48,9 +53,19 @@ public class OrderService {
                 .map(OrderLineItems::getSkuCode)
                 .toList();
 
-        orderRepository.save(order);
+        // Check inventory services to see if sku-code is in stock
+        Boolean result = webClient.get().uri("https://localhost:8082/api/inventory",
+                uriBuilder -> uriBuilder.queryParam("skuCodes", skuCodes).build())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block();
+        if (result) {
+            orderRepository.save(order);
+            log.info("Item is in stock, saving order.");
+        } else {
+            throw new IllegalArgumentException("Product is out of stock. Check Later");
+        }
         log.info("Order Number: {} was placed", order.getOrderNumber());
-
     }
 
     public List<OrderResponse> getAllOrders() {
