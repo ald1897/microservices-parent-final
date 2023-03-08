@@ -59,6 +59,12 @@
             <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>inventory-service</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 

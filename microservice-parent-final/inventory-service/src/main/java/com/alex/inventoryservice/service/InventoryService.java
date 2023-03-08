@@ -25,7 +25,7 @@ public class InventoryService {
     @Transactional(readOnly = true)
     @SneakyThrows
     public List<InventoryResponse> isInStock(List<String> skuCode) {
-        log.info("Checking Inventory");
+        log.info("Checking Inventory...");
         return inventoryRepository.findBySkuCodeIn(skuCode).stream()
                 .map(inventory ->
                         InventoryResponse.builder()
@@ -34,4 +34,23 @@ public class InventoryService {
                                 .build()
                 ).toList();
     }
+    public void updateInventory(List<String> skuCode) {
+        log.info("Updating Inventory...");
+        System.out.println(inventoryRepository.findBySkuCodeIn(skuCode).stream()
+                .map(inventory -> inventory.getQty()).toList());
+//        for (String sC:skuCode) {
+//            inventoryRepository.
+//        }
+
+//        inventoryRepository.findBySkuCodeIn(skuCode).stream()
+//                .map(inventory ->
+//                        InventoryResponse.builder()
+//                                .skuCode(inventory.getSkuCode())
+//                                .isInStock(inventory.getQty() > 0)
+//                                .build()
+//                ).toList();
+
+    }
+
+
 }

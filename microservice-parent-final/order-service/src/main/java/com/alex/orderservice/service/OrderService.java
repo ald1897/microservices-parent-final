@@ -1,5 +1,6 @@
 package com.alex.orderservice.service;
 
+import com.alex.inventoryservice.service.InventoryService;
 import com.alex.orderservice.dto.InventoryResponse;
 import com.alex.orderservice.dto.OrderLineItemsDto;
 import com.alex.orderservice.dto.OrderRequest;
@@ -25,6 +26,8 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final InventoryService inventoryService;
+
 
     private final WebClient webClient;
 
@@ -65,10 +68,13 @@ public class OrderService {
 
         if (allProductsInStock) {
             orderRepository.save(order);
-            log.info("All Items is in stock, saving order.");
+            log.info("All Items in stock, saving order.");
             log.info("Order Number: {} was placed", order.getOrderNumber());
+            log.info("Updating Inventory from Order Service");
+            inventoryService.updateInventory(skuCodes);
+
         } else {
-            throw new IllegalArgumentException("Product is out of stock. Check Later");
+            throw new IllegalArgumentException("Products are out of stock. Check Later");
         }
     }
 
