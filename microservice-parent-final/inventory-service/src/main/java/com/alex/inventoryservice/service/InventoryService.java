@@ -1,9 +1,12 @@
 package com.alex.inventoryservice.service;
 
+import com.alex.inventoryservice.dto.InventoryRequest;
 import com.alex.inventoryservice.dto.InventoryResponse;
 import com.alex.inventoryservice.dto.InventoryUpdate;
 import com.alex.inventoryservice.repository.InventoryRepository;
 import com.alex.inventoryservice.model.Inventory;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -13,11 +16,9 @@ import org.springframework.data.util.StreamUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -38,67 +39,71 @@ public class InventoryService {
                         InventoryResponse.builder()
                                 .skuCode(inventory.getSkuCode())
                                 .isInStock(inventory.getQty() > 0)
+                                .qty(inventory.getQty())
                                 .build()
                 ).toList();
     }
 
-//    @Transactional()
-//    @SneakyThrows
-//    public void updateInventory(List<String> skuCode, List<Integer> qty) {
-//        log.info("Updating Inventory for " + skuCode);
-//
-//        List<Pair> list = new ArrayList<Pair>();
-//
-//        for (String sc : skuCode) {
-//            Pair pair = new Pair();
-//            list.add(pair);
-//            pair.setString(sc);
-//        }
-//        for(Integer q : qty) {
-//            pair.setInteger(q);
-//        }
-//
-//
-//        for (Pair p : list) {
-//            System.out.println(p.getString());
-//            System.out.println(p.getInteger());
-//
-//        }
-////        for (String sc : skuCode) {
-////
-////            for(Integer q : qty) {
-////                Inventory inventory = inventoryRepository.findBySkuCode(sc);
-////                log.info(String.valueOf("inventory.getQty() " + inventory.getQty()));
-////                log.info(String.valueOf("inventory.getSkuCode() " + inventory.getSkuCode()));
-////                log.info(String.valueOf("inventory.getID() " + inventory.getId()));
-////                log.info(String.valueOf("sc : " + sc));
-////                log.info(String.valueOf("q : " + q));
-////                inventory.setQty(inventory.getQty()-q);
-////                log.info(String.valueOf("After Inventory Update inventory.getQty() " + inventory.getQty()));
-////
-////            }
-////
-////        }
-////        Inventory inventory = inventoryRepository.findBySkuCode(skuCode).stream()
-////                .map(inventory ->
-////                        InventoryUpdate.builder()
-////                                .skuCode(inventory.getSkuCode())
-////                                .qty(inventory.getQty())
-////                                .build()
-////                ).toList();
-////        log.info(inventoryList.toString());
-//
-//    }
+    @Transactional(readOnly = true)
+    @SneakyThrows
+    public List<InventoryResponse> isInStock(Multimap<String, Integer> skuQtyMap) {
+
+        //Create list of inventory responses to be returned
+        List<InventoryResponse> inventoryResponses = new ArrayList<>();
+        // Iterate through skuCodes in MM
+        for (String skuCode : skuQtyMap.keySet()) {
+            // Story qty in variable to compare with current stock
+            int totalQty = skuQtyMap.get(skuCode).stream().mapToInt(Integer::intValue).sum();
+//            log.info(String.valueOf(totalQty));
+            // Get the inventory for the skuCode
+            Inventory inventory;
+            try {
+                inventory = inventoryRepository.findBySkuCode(skuCode);
+                inventoryResponses.add(InventoryResponse.builder()
+                        .skuCode(inventory.getSkuCode())
+                        .isInStock(inventory.getQty() > totalQty)
+                        .qty(inventory.getQty())
+                        .build());
+//                log.info(String.valueOf(inventoryResponses));
+            } catch (Exception e) {
+                //  Block of code to handle errors
+                throw new SkuCodeNotFoundException();
+            }
+        }
+        return inventoryResponses;
+    }
 
     @Transactional()
     @SneakyThrows
-    public void updateInventory(String skuCode, Integer qty) {
-        log.info("Updating Inventory for " + skuCode + " By amount of " + qty);
-        Inventory inventory = inventoryRepository.findBySkuCode(skuCode);
-        int new_qty = inventory.getQty()-qty;
-        inventory.setQty(new_qty);
-        log.info("New Qty for " + skuCode + ": " + inventory.getQty());
+    public void updateInventory(String skuCode, Integer qty) throws SkuCodeNotFoundException {
 
+//        log.info("Updating Inventory for " + skuCode + " By amount of " + qty);
+
+        Inventory inventory = inventoryRepository.findBySkuCode(skuCode);
+
+        int new_qty = inventory.getQty()-qty;
+
+        // If the remaining amount of inventory is >= 0 (not sold out)
+        inventory.setQty(new_qty);
+
+        log.info("Updated Qty for " + skuCode + ": " + inventory.getQty());
+        if (inventory.getQty() < 0) {
+            log.warn(skuCode + " IS BACK ORDERED BY " + (inventory.getQty()*-1) + " UNITS. TRIGGERING RESUPPLY LOGIC!");
+            inventory.resupply(inventory.getQty(), 100);
+        }
+    }
+
+    @Transactional()
+    @SneakyThrows
+    public void addInventory(InventoryRequest inventoryRequest) {
+         Inventory inventory = Inventory.builder()
+                .skuCode(inventoryRequest.getSkuCode())
+                .id(inventoryRequest.getId())
+                .qty(inventoryRequest.getQty())
+                .build();
+
+        inventoryRepository.save(inventory);
+        log.info("Inventory {} is saved", inventory.getSkuCode());
     }
 
 }
