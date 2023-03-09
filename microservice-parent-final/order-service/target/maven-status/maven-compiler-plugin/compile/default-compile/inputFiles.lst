@@ -2,6 +2,7 @@ C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final
 C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\config\WebClientConfig.java
 C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\service\OrderService.java
 C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderRequest.java
+C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\InventoryUpdate.java
 C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\repository\OrderRepository.java
 C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderLineItemsDto.java
 C:\Users\Alexd\IdeaProjects\microservices-parent-final\microservice-parent-final\order-service\src\main\java\com\alex\orderservice\dto\OrderResponse.java

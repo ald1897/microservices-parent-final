@@ -1,10 +1,7 @@
 package com.alex.orderservice.service;
 
-import com.alex.inventoryservice.service.InventoryService;
-import com.alex.orderservice.dto.InventoryResponse;
-import com.alex.orderservice.dto.OrderLineItemsDto;
-import com.alex.orderservice.dto.OrderRequest;
-import com.alex.orderservice.dto.OrderResponse;
+//import com.alex.inventoryservice.service.InventoryService;
+import com.alex.orderservice.dto.*;
 import com.alex.orderservice.model.Order;
 import com.alex.orderservice.model.OrderLineItems;
 import com.alex.orderservice.repository.OrderRepository;
@@ -14,9 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -26,7 +21,7 @@ import java.util.UUID;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final InventoryService inventoryService;
+//    private final InventoryService inventoryService;
 
 
     private final WebClient webClient;
@@ -55,6 +50,16 @@ public class OrderService {
                 .map(OrderLineItems::getSkuCode)
                 .toList();
 
+        // Update Inventory Service by reducing Quantity by amount that was ordered
+        List<Integer> qtys = order.getOrderLineItemsList().stream()
+                .map(OrderLineItems::getQty)
+                .toList();
+
+        Iterator<String> it1 = skuCodes.iterator();
+        Iterator<Integer> it2 = qtys.iterator();
+
+
+
         // Check inventory services to see if sku-code is in stock
         InventoryResponse[] inventoryResponseArray = webClient.get().uri("http://localhost:8082/api/inventory",
                 uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).build())
@@ -71,11 +76,21 @@ public class OrderService {
             log.info("All Items in stock, saving order.");
             log.info("Order Number: {} was placed", order.getOrderNumber());
             log.info("Updating Inventory from Order Service");
-            inventoryService.updateInventory(skuCodes);
+//            inventoryService.updateInventory(skuCodes);
+            while (it1.hasNext() && it2.hasNext()) {
+                webClient.post().uri("http://localhost:8082/api/inventory",
+                                uriBuilder -> uriBuilder.queryParam("skuCode").queryParam("qty").build())
+                        .retrieve()
+                        .bodyToMono(InventoryUpdate[].class)
+                        .block();
+            }
+
 
         } else {
             throw new IllegalArgumentException("Products are out of stock. Check Later");
         }
+
+
     }
 
     public List<OrderResponse> getAllOrders() {

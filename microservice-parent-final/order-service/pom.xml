@@ -17,6 +17,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>com.alex</groupId>-->
+<!--            <artifactId>inventory-service</artifactId>-->
+<!--            <version>1.0-SNAPSHOT</version>-->
+<!--            &lt;!&ndash;            <scope>system</scope>&ndash;&gt;-->
+<!--            &lt;!&ndash;            <systemPath>\microservices-parent-final\inventory-service\target\inventory-service-1.0-SNAPSHOT.jar</systemPath>&ndash;&gt;-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -58,12 +65,6 @@
             <artifactId>mysql</artifactId>
             <version>1.17.6</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alex</groupId>
-            <artifactId>inventory-service</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
