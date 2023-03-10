@@ -48,6 +48,8 @@ public class InventoryService {
     @SneakyThrows
     public List<InventoryResponse> isInStock(Multimap<String, Integer> skuQtyMap) {
 
+        log.info("Checking if skuCode is in stock...");
+
         //Create list of inventory responses to be returned
         List<InventoryResponse> inventoryResponses = new ArrayList<>();
         // Iterate through skuCodes in MM
@@ -103,7 +105,24 @@ public class InventoryService {
                 .build();
 
         inventoryRepository.save(inventory);
-        log.info("Inventory {} is saved", inventory.getSkuCode());
+        log.info("Inventory {} is saved with qty of {}", inventory.getSkuCode(), inventory.getQty());
     }
 
+    @Transactional(readOnly = true)
+    @SneakyThrows
+    public List<InventoryResponse> getAllInventories() {
+
+        List<Inventory> inventoryList = inventoryRepository.findAll();
+        log.info("Getting all {} Inventories...", inventoryList.size());
+
+        return inventoryList.stream().map(this::mapToInventoryResponse).toList();
+    }
+
+    private InventoryResponse mapToInventoryResponse(Inventory inventory) {
+        return InventoryResponse.builder()
+                .skuCode(inventory.getSkuCode())
+                .isInStock(inventory.getQty() > 0)
+                .qty(inventory.getQty())
+                .build();
+    }
 }

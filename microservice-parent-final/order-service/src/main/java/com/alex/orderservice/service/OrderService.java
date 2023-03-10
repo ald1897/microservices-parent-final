@@ -26,7 +26,7 @@ public class OrderService {
 //    private final InventoryService inventoryService;
 
 
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     //placeOrder Method takes in the OrderRequest object passed in from the controller
     public void placeOrder(OrderRequest orderRequest) {
@@ -73,7 +73,8 @@ public class OrderService {
         // Create an array of inventoryResponses by executing a GET request to http://localhost:8082/api/inventory?skuCode=x&qty=y
         InventoryResponse[] inventoryResponseArray = new InventoryResponse[0];
         try {
-            inventoryResponseArray = webClient.get().uri("http://localhost:8082/api/inventory",
+            inventoryResponseArray = webClientBuilder.build().get()
+                    .uri("http://inventory-service/api/inventory",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).queryParam("qty", qtys).build())
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
@@ -103,8 +104,9 @@ public class OrderService {
                 Integer qty = (Integer) entry.getValue();
 
                 // Send a post request to inventory service with the skuCode and qty to be deducted
-                log.info("Hitting inventory endpoint...");
-                InventoryUpdate inventoryUpdate = webClient.post().uri("http://localhost:8082/api/inventory",
+                log.info("Hitting inventory endpoint inventory-service/api/inventory...");
+                InventoryUpdate inventoryUpdate = webClientBuilder.build().post()
+                        .uri("http://inventory-service/api/inventory",
                                 uriBuilder -> uriBuilder.queryParam("skuCode", skuCode).queryParam("qty", qty).build())
                         .retrieve()
                         .bodyToMono(InventoryUpdate.class)

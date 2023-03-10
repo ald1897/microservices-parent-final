@@ -22,11 +22,14 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode) {
-//        return inventoryService.isInStock(skuCode);
-//    }
+
+    @RequestMapping("/all")
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<InventoryResponse> getAllProducts() {
+        return inventoryService.getAllInventories();
+    }
+
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -37,15 +40,8 @@ public class InventoryController {
         while (it1.hasNext() && it2.hasNext()) {
             map.put(it1.next(), it2.next());
         }
-
-
         return inventoryService.isInStock(map);
     }
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode, @RequestParam List<Integer> qty) {
-//        return inventoryService.isInStock(skuCode, qty);
-//    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
@@ -55,16 +51,9 @@ public class InventoryController {
     }
     @RequestMapping("/add")
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public void addInventory(@RequestBody InventoryRequest inventoryRequest) {
 //        Update the inventory based on the sku code
         inventoryService.addInventory(inventoryRequest);
     }
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public void updateInventory(@RequestParam List<String> skuCode, @RequestParam List<Integer> qty) {
-////        Update the inventory based on the sku code
-//        inventoryService.updateInventory(skuCode, qty);
-//
-//    }s
 }
