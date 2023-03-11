@@ -3,7 +3,6 @@ package com.alex.inventoryservice.controller;
 
 import com.alex.inventoryservice.dto.InventoryRequest;
 import com.alex.inventoryservice.dto.InventoryResponse;
-import com.alex.inventoryservice.dto.InventoryUpdate;
 import com.alex.inventoryservice.service.InventoryService;
 import com.alex.inventoryservice.service.SkuCodeNotFoundException;
 import com.google.common.collect.ArrayListMultimap;
@@ -26,7 +25,7 @@ public class InventoryController {
     @RequestMapping("/all")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> getAllProducts() {
+    public List<InventoryResponse> getAllInventories() {
         return inventoryService.getAllInventories();
     }
 

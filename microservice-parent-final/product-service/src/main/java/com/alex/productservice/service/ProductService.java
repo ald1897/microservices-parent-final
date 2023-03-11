@@ -32,6 +32,8 @@ public class ProductService {
     public List<ProductResponse> getAllProducts() {
         List<Product> products = productRepository.findAll();
 
+        log.info("Got All Products!");
+
         return products.stream().map(this::mapToProductResponse).toList();
     }
 
@@ -48,6 +50,7 @@ public class ProductService {
         Optional<Product> oProduct = productRepository.findById(id);
 
         if (oProduct.isEmpty()) {
+            log.info("Product found");
             throw new ProductNotFoundException();
         }
         return oProduct.get();
