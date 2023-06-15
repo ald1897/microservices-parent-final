@@ -22,11 +22,18 @@ public class InventoryController {
     private final InventoryService inventoryService;
 
 
+
     @RequestMapping("/all")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<InventoryResponse> getAllInventories() {
         return inventoryService.getAllInventories();
+    }
+
+    @RequestMapping("/home")
+    @ResponseStatus(HttpStatus.OK)
+    public String home() {
+        return "Hello World, Welcome to the Inventory Service Home Page!";
     }
 
 

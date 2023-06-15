@@ -1,6 +1,6 @@
 package com.alex.productservice.controller;
 
-
+import com.alex.productservice.service.ProductNotFoundException;
 import com.alex.productservice.service.ProductService;
 import com.alex.productservice.dto.ProductRequest;
 import com.alex.productservice.dto.ProductResponse;
