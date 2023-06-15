@@ -70,24 +70,30 @@ public class OrderService {
 //        log.info("Inventory MultiMap: " + map);
 
 
-        // Create an array of inventoryResponses by executing a GET request to http://localhost:8082/api/inventory?skuCode=x&qty=y
-        InventoryResponse[] inventoryResponseArray = new InventoryResponse[0];
-        try {
-            inventoryResponseArray = webClientBuilder.build().get()
-                    .uri("http://inventory-service/api/inventory",
-                            uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).queryParam("qty", qtys).build())
-                    .retrieve()
-                    .bodyToMono(InventoryResponse[].class)
-                    .block();
-        } catch (Exception e) {
-            //  Block of code to handle errors
-            throw new IllegalArgumentException("Sku Code does not exist. Try again later.");
-
-
-        }
+//        // Create an array of inventoryResponses by executing a GET request to http://localhost:8082/api/inventory?skuCode=x&qty=y
+//        InventoryResponse[] inventoryResponseArray = new InventoryResponse[0];
+//        try {
+//            inventoryResponseArray = webClientBuilder.build().get()
+//                    .uri("http://inventory-service/api/inventory",
+//                            uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).queryParam("qty", qtys).build())
+//                    .retrieve()
+//                    .bodyToMono(InventoryResponse[].class)
+//                    .block();
+//        } catch (Exception e) {
+//            //  Block of code to handle errors
+//            throw new IllegalArgumentException("Sku Code does not exist. Try again later.");
+//
+//
+//        }
         // Check if all items in the array are isInStock = TRUE
-        boolean allProductsInStock = Arrays.stream(inventoryResponseArray)
-                .allMatch(InventoryResponse::isInStock);
+//        assert inventoryResponseArray != null;
+//        for (InventoryResponse inventoryResponse : inventoryResponseArray) {
+//            if (!inventoryResponse.isInStock()) {
+//                log.info("Item is not in stock");
+//                throw new IllegalArgumentException("Item is not in stock. Try again later.");
+//            }
+//        }
+        boolean allProductsInStock = true;
 
         // IF all items are in stock for the required amount, save the order and update the inventory amounts for the items
         if (allProductsInStock) {
