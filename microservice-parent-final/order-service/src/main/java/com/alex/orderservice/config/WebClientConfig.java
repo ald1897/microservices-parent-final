@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 public class WebClientConfig {
+
     private final OAuth2AuthorizedClientManager authorizedClientManager;
 
     public WebClientConfig(OAuth2AuthorizedClientManager authorizedClientManager) {
