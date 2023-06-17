@@ -20,8 +20,8 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public String placeOrder(@RequestBody OrderRequest orderRequest){
         orderService.placeOrder(orderRequest);
-        return "Order Placed Successfully.";
-
+        // return order is not placed successfully
+        return "Order Placed Successfully";
     }
 
     @GetMapping
@@ -33,6 +33,12 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllOrders(){
         orderService.deleteAllOrders();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteOrderById(@RequestBody OrderRequest orderRequest){
+        orderService.deleteOrderById(orderRequest);
     }
 
 }

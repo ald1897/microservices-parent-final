@@ -69,6 +69,7 @@ public class InventoryService {
 //                log.info(String.valueOf(inventoryResponses));
             } catch (Exception e) {
                 // Return a null object if the skuCode is not found
+                log.info("SkuCode not found");
                 return null;
             }
         }

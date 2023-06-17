@@ -64,13 +64,13 @@ public class OrderService {
                 saveOrder(order);
 
             } else {
-                log.info("Order is invalid, not saving order.");
-                throw new RuntimeException("Order is invalid, not saving order.");
+                log.info("All Items not in Stock, not saving order.");
+                throw new RuntimeException("All Items not in Stock, not saving order.");
             }
 
         } else {
-            log.info("Order is invalid, not saving order.");
-            throw new RuntimeException("Order is invalid, not saving order.");
+            log.info("validOrder is NULL, not saving order.");
+            throw new RuntimeException("validOrder is NULL, not saving order.");
         }
     }
 
@@ -87,10 +87,9 @@ public class OrderService {
                     .bodyToMono(InventoryResponse[].class)
                     .block();
             // add logging so i can see the inventoryResponse
-            log.info("Inventory Response: " + Arrays.toString(inventoryResponseArray));
+            log.info("Inventory Response Array: " + Arrays.toString(inventoryResponseArray));
         } catch (Exception e) {
             //  Block of code to handle errors
-            log.info( Arrays.toString(inventoryResponseArray));
             log.error("Error during inventory check: " + e.getMessage());
             inventoryResponseArray = null;
         }
@@ -147,14 +146,13 @@ public class OrderService {
             Integer qty = (Integer) entry.getValue();
 
             // Send a post request to inventory service with the skuCode and qty to be deducted
-            log.info("Hitting inventory endpoint inventory-service/api/inventory...");
+            log.info("Sending POST Request to inventory-service/api/inventory?skuCode=skuCode&qty=qty for skuCode: " + skuCode + " and qty: " + qty + "");
             InventoryUpdate inventoryUpdate = webClientBuilder.build().post()
                     .uri("http://inventory-service/api/inventory",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCode).queryParam("qty", qty).build())
                     .retrieve()
                     .bodyToMono(InventoryUpdate.class)
                     .block();
-            log.info("Inventory Update: " + inventoryUpdate);
         }
         log.info("Inventory Updated");
     }
@@ -208,8 +206,9 @@ public class OrderService {
 
     }
 
-    public void deleteOrderById(Long orderNumber) {
-        log.info("Deleting Order with Order Number: {}", orderNumber);
+    public void deleteOrderById(OrderRequest orderRequest) {
+        log.info("Deleting Order with Order Number: {}", orderRequest.getOrderLineItemsDtoList();
+
         orderRepository.deleteById(orderNumber);
         log.info("Order Deleted with Order Number: {}", orderNumber);
     }
