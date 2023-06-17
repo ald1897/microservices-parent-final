@@ -79,6 +79,8 @@ public class OrderService {
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
                     .block();
+            // add logging so i can see the inventoryResponse
+            log.info("Inventory Response: " + Arrays.toString(inventoryResponseArray));
         } catch (Exception e) {
             //  Block of code to handle errors
             throw new IllegalArgumentException("Sku Code does not exist. Try again later.");

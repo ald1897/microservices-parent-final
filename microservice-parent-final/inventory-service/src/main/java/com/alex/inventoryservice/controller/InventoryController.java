@@ -21,8 +21,6 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-
-
     @RequestMapping("/all")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -35,7 +33,6 @@ public class InventoryController {
     public String home() {
         return "Hello World, Welcome to the Inventory Service Home Page!";
     }
-
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

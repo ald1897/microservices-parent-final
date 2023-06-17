@@ -1,4 +1,4 @@
-package config;
+package com.alex.apigateway.config;
 
 import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 import org.springframework.context.annotation.Bean;
