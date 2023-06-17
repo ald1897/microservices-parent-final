@@ -8,6 +8,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -48,7 +50,7 @@ public class OrderService {
         log.info("Checking if order is valid & if all items are in stock");
 
         // if the validOrder is returned then check allItemsInStock
-        if (validOrder.length > 0) {
+        if (validOrder != null) {
             // Create a method to check if all items are in stock
             boolean allItemsInStock = checkIfAllItemsInStock(validOrder);
             log.info("All items in stock: " + allItemsInStock);
@@ -61,17 +63,22 @@ public class OrderService {
                 log.info("Saving Order.");
                 saveOrder(order);
 
-                log.info("Order Number: {} was placed", order.getOrderNumber());
+            } else {
+                log.info("Order is invalid, not saving order.");
+                throw new RuntimeException("Order is invalid, not saving order.");
+            }
 
-            } else {log.info("Order is invalid, not saving order.");}
-
-        } else {log.info("Order is invalid, not saving order.");}
+        } else {
+            log.info("Order is invalid, not saving order.");
+            throw new RuntimeException("Order is invalid, not saving order.");
+        }
     }
 
     private  InventoryResponse[] checkIfValidOrder(Order order, List<String> skuCodes, List<Integer> qtys) {
         // Create an array of inventoryResponses by executing a GET request to http://localhost:8080/api/inventory?skuCode=x&qty=y
         log.info("Checking if order is valid & if all items are in stock");
        InventoryResponse[] inventoryResponseArray = new InventoryResponse[0];
+       log.info("Inventory Response Array: " + Arrays.toString(inventoryResponseArray));
         try {
             inventoryResponseArray = webClientBuilder.build().get()
                     .uri("http://inventory-service/api/inventory",
@@ -83,12 +90,15 @@ public class OrderService {
             log.info("Inventory Response: " + Arrays.toString(inventoryResponseArray));
         } catch (Exception e) {
             //  Block of code to handle errors
-            throw new IllegalArgumentException("Sku Code does not exist. Try again later.");
+            log.info( Arrays.toString(inventoryResponseArray));
+            log.error("Error during inventory check: " + e.getMessage());
+            inventoryResponseArray = null;
         }
-        if (inventoryResponseArray.length == 0) {
-            throw new IllegalArgumentException("Inventory Response Empty. Try again later.");
+        if (inventoryResponseArray == null) {
+            log.error("Error during inventory check: Inventory Response Empty. Order is invalid.");
         } else {
             return inventoryResponseArray;}
+        return inventoryResponseArray;
     }
 
     private boolean checkIfAllItemsInStock(InventoryResponse[] validOrder) {
@@ -197,4 +207,11 @@ public class OrderService {
         log.info("Orders Deleted.", count);
 
     }
+
+    public void deleteOrderById(Long orderNumber) {
+        log.info("Deleting Order with Order Number: {}", orderNumber);
+        orderRepository.deleteById(orderNumber);
+        log.info("Order Deleted with Order Number: {}", orderNumber);
+    }
+
 }

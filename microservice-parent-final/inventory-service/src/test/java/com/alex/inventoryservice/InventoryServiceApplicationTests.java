@@ -71,11 +71,11 @@ class InventoryServiceApplicationTests {
 //
 //			mockMvc.perform(MockMvcRequestBuilders.get("/api/inventory/{sku-code}", inventory.getSkuCode()))
 //					.andExpect(status().isOk());
-////			log.info("Got Inventory with Sku-Code {}", inventory.getSkuCode());
+//			log.info("Got Inventory with Sku-Code {}", inventory.getSkuCode());
 //
 //		}
-
-
-
+//
+//
+//
 //	}
 }

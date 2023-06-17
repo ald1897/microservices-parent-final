@@ -68,8 +68,8 @@ public class InventoryService {
                         .build());
 //                log.info(String.valueOf(inventoryResponses));
             } catch (Exception e) {
-                //  Block of code to handle errors
-                throw new SkuCodeNotFoundException();
+                // Return a null object if the skuCode is not found
+                return null;
             }
         }
         return inventoryResponses;
