@@ -64,7 +64,45 @@ public class OrderService {
             throw new RuntimeException("validOrder is NULL, not saving order.");
         }
     }
+    private Order createOrder(OrderRequest orderRequest) {
+        Order order = new Order();
+        order.setOrderNumber(UUID.randomUUID().toString());
+        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
+        order.setOrderLineItemsList(orderLineItems);
+        return order;
+    }
+    private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
+        OrderLineItems orderLineItems = new OrderLineItems();
+        orderLineItems.setPrice(orderLineItemsDto.getPrice());
+        orderLineItems.setQty(orderLineItemsDto.getQty());
+        orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
+        return orderLineItems;
+    }
+    private List<String> createSkuCodeList(Order order) {
+        return order.getOrderLineItemsList().stream()
+                .map(OrderLineItems::getSkuCode)
+                .toList();
+    }
+    private List<Integer> createQtyList(Order order) {
+        return order.getOrderLineItemsList().stream()
+                .map(OrderLineItems::getQty)
+                .toList();
+    }
+    private Multimap<String, Integer> createIteratorMap(Order order, List<String> skuCodes, List<Integer> qtys) {
+        // Create iterators to loop through each list in sync
+        Iterator<String> it1 = skuCodes.iterator();
+        Iterator<Integer> it2 = qtys.iterator();
 
+        // Store iterator data here in key/value pairs
+        Multimap<String, Integer> map = ArrayListMultimap.create();
+        while (it1.hasNext() && it2.hasNext()) {
+            map.put(it1.next(), it2.next());
+        }
+        return map;
+    }
     private  InventoryResponse[] checkIfValidOrder(Order order, List<String> skuCodes, List<Integer> qtys) {
         // Create an array of inventoryResponses by executing a GET request to http://localhost:8080/api/inventory?skuCode=x&qty=y
         log.info("Checking if order is valid & if all items are in stock");
@@ -91,7 +129,6 @@ public class OrderService {
 
         return null;
     }
-
     private boolean checkIfAllItemsInStock(InventoryResponse[] validOrder) {
         // Create a boolean to check if all items are in stock
         boolean allItemsInStock = true;
@@ -103,32 +140,6 @@ public class OrderService {
         }
         return allItemsInStock;
     }
-
-    private void saveOrder(Order order) {
-        log.info("All Items in stock, saving order.");
-        orderRepository.save(order);
-        log.info("Order: {} was placed", order.getId());
-    }
-
-    private Multimap<String, Integer> createIteratorMap(Order order, List<String> skuCodes, List<Integer> qtys) {
-        // Create iterators to loop through each list in sync
-        Iterator<String> it1 = skuCodes.iterator();
-        Iterator<Integer> it2 = qtys.iterator();
-
-        // Store iterator data here in key/value pairs
-        Multimap<String, Integer> map = ArrayListMultimap.create();
-        while (it1.hasNext() && it2.hasNext()) {
-            map.put(it1.next(), it2.next());
-        }
-        return map;
-    }
-
-    private List<Integer> createQtyList(Order order) {
-        return order.getOrderLineItemsList().stream()
-                .map(OrderLineItems::getQty)
-                .toList();
-    }
-
     private void updateInventory(Multimap<String, Integer> map) {
         // Iterate through multimap list so skuCode and qty are lined up
         for (Map.Entry entry : map.entries()) {
@@ -148,24 +159,11 @@ public class OrderService {
         }
         log.info("Inventory Updated");
     }
-
-    private List<String> createSkuCodeList(Order order) {
-        return order.getOrderLineItemsList().stream()
-                .map(OrderLineItems::getSkuCode)
-                .toList();
+    private void saveOrder(Order order) {
+        log.info("All Items in stock, saving order.");
+        orderRepository.save(order);
+        log.info("Order: {} was placed", order.getId());
     }
-
-    private Order createOrder(OrderRequest orderRequest) {
-        Order order = new Order();
-        order.setOrderNumber(UUID.randomUUID().toString());
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-        order.setOrderLineItemsList(orderLineItems);
-        return order;
-    }
-
     public List<OrderResponse> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
 
@@ -176,12 +174,15 @@ public class OrderService {
 
     }
 
-    private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
-        OrderLineItems orderLineItems = new OrderLineItems();
-        orderLineItems.setPrice(orderLineItemsDto.getPrice());
-        orderLineItems.setQty(orderLineItemsDto.getQty());
-        orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
-        return orderLineItems;
+    public OrderResponse getOrderById(Long orderId) throws OrderIdNotFoundException {
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            log.info("Got Order with ID: {}", orderId);
+            return mapToOrderResponse(order.get());
+        } else {
+            log.info("Order with ID: {} does not exist", orderId);
+            throw new OrderIdNotFoundException();
+        }
     }
 
     private OrderResponse mapToOrderResponse(Order order) {
@@ -189,7 +190,6 @@ public class OrderService {
                 .orderLineItemsList(order.getOrderLineItemsList())
                 .build();
     }
-
     public void deleteAllOrders() {
         Long count = orderRepository.count();
         log.info("Deleting All {} Orders", count);
@@ -197,7 +197,6 @@ public class OrderService {
         log.info("Orders Deleted.", count);
 
     }
-
     public void deleteOrderById(Long orderId) throws OrderIdNotFoundException{
        Optional<Order> order = orderRepository.findById(orderId);
         if (order.isPresent()) {
@@ -207,5 +206,7 @@ public class OrderService {
             log.info("Order with ID: {} does not exist", orderId);
         }
     }
+
+
 
 }

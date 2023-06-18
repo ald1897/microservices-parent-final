@@ -32,16 +32,21 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @GetMapping("/{orderId}")
+    @ResponseStatus(HttpStatus.OK)
+    public OrderResponse getOrderById(@PathVariable Long orderId) throws OrderIdNotFoundException {
+        return orderService.getOrderById(orderId);
+    }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllOrders(){
         orderService.deleteAllOrders();
     }
 
-    @RequestMapping("/delete")
-    @PostMapping
+    @PostMapping("/delete/{orderId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteOrderById(@RequestParam Long orderId) throws OrderIdNotFoundException {
+    public void deleteOrderById(@PathVariable Long orderId) throws OrderIdNotFoundException {
         orderService.deleteOrderById(orderId);
     }
 
