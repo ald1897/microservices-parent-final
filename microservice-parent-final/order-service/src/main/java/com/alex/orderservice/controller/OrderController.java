@@ -1,7 +1,10 @@
 package com.alex.orderservice.controller;
 
+import com.alex.orderservice.dto.DeleteOrderRequest;
 import com.alex.orderservice.dto.OrderRequest;
 import com.alex.orderservice.dto.OrderResponse;
+import com.alex.orderservice.model.Order;
+import com.alex.orderservice.service.OrderIdNotFoundException;
 import com.alex.orderservice.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,8 +23,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public String placeOrder(@RequestBody OrderRequest orderRequest){
         orderService.placeOrder(orderRequest);
-        // return order is not placed successfully
-        return "Order Placed Successfully";
+        return "Order Placed Successfully for " + orderRequest.getOrderLineItemsDtoList().size() + " items in the amount of $ " + orderRequest.getOrderLineItemsDtoList().stream().mapToDouble(orderLineItemsDto -> orderLineItemsDto.getPrice().doubleValue()).sum() + "";
     }
 
     @GetMapping
@@ -29,16 +31,18 @@ public class OrderController {
     public List<OrderResponse> getAllOrders(){
         return orderService.getAllOrders();
     }
+
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deleteAllOrders(){
         orderService.deleteAllOrders();
     }
 
+    @RequestMapping("/delete")
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
-    public void deleteOrderById(@RequestBody OrderRequest orderRequest){
-        orderService.deleteOrderById(orderRequest);
+    public void deleteOrderById(@RequestParam Long orderId) throws OrderIdNotFoundException {
+        orderService.deleteOrderById(orderId);
     }
 
 }

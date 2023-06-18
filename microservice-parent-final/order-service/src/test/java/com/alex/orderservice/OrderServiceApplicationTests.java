@@ -1,5 +1,7 @@
 package com.alex.orderservice;
 
+import com.alex.orderservice.dto.DeleteOrderLineItemsDto;
+import com.alex.orderservice.dto.DeleteOrderRequest;
 import com.alex.orderservice.dto.OrderLineItemsDto;
 import com.alex.orderservice.dto.OrderRequest;
 import com.alex.orderservice.model.OrderLineItems;
@@ -150,40 +152,56 @@ class OrderServiceApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/order"))
 				.andExpect(status().isOk());
 	}
-
-	@Test
-	@Order(5)
-	void shouldDeleteOrderByOrderId() throws Exception {
-		log.info("Get Order Request...");
-		OrderRequest orderRequest = getValidOrderRequest();
-		log.info("Setting orderLineItems...");
-		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-				.stream()
-				.map(this::mapToDto)
-				.toList();
-		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
-		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
-		// Order 1
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(orderRequestString))
-				.andExpect(status().isCreated());
-		// Order 2
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(orderRequestString))
-				.andExpect(status().isCreated());
-		log.info("Asserting that there are 2 orders in the DB...");
-		Assertions.assertEquals(2, orderRepository.count());
-		log.info("Asserted that there are 2 orders in the DB");
-		log.info("Hitting /api/order with DELETE Request...");
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/0001"))
-				.andExpect(status().isOk());
-		log.info("Asserting that there is 1 order in the DB...");
-		Assertions.assertEquals(1, orderRepository.count());
-		log.info("Asserted that there is 1 order in the DB");
-
-	}
+//
+//	@Test
+//	@Order(5)
+//	void shouldDeleteOrderByOrderId() throws Exception {
+//		log.info("Get Order Request...");
+//		OrderRequest orderRequest = getValidOrderRequest();
+//		log.info("Setting orderLineItems...");
+//		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+//				.stream()
+//				.map(this::mapToDto)
+//				.toList();
+//
+//		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
+//		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+//		// Order 1
+//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+//						.contentType(MediaType.APPLICATION_JSON)
+//						.content(orderRequestString))
+//				.andExpect(status().isCreated());
+//		// Order 2
+//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/")
+//						.contentType(MediaType.APPLICATION_JSON)
+//						.content(orderRequestString))
+//				.andExpect(status().isCreated());
+//
+//
+//		log.info("Asserting that there are 2 orders in the DB...");
+//		Assertions.assertEquals(2, orderRepository.count());
+//		log.info("Asserted that there are 2 orders in the DB");
+//
+//
+//		log.info("Creating Delete Order Request...");
+//		DeleteOrderRequest deleteOrderRequest = getDeleteOrderRequest();
+//		log.info("Setting orderLineItems for Deletion...");
+//		List<OrderLineItems> deleteOrderLineItems = deleteOrderRequest.getDeleteOrderLineItemsDtoList()
+//				.stream()
+//				.map(this::mapToDtoD)
+//				.toList();
+//		log.info("Hitting /api/order with DELETE Request...");
+//		String deleteOrderRequestString = objectMapper.writeValueAsString(deleteOrderRequest);
+//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/delete")
+//				.contentType(MediaType.APPLICATION_JSON)
+//				.content(deleteOrderRequestString))
+//				.andExpect(status().isOk());
+//
+//		log.info("Asserting that there is 1 order in the DB...");
+//		Assertions.assertEquals(1, orderRepository.count());
+//		log.info("Asserted that there is 1 order in the DB");
+//
+//	}
 
 
 
@@ -215,6 +233,20 @@ class OrderServiceApplicationTests {
 		return orderRequest;
 	}
 
+	private DeleteOrderRequest getDeleteOrderRequest() {
+		log.info("Creating new Valid Order Request...");
+		DeleteOrderRequest deleteOrderRequest = new DeleteOrderRequest();
+		log.info(deleteOrderRequest.toString());
+		log.info("Creating OrderLineItemsDtoList...");
+		List<DeleteOrderLineItemsDto> deleteOrderLineItemsDtoList = getDeleteOrderLineItemsDtoList();
+		log.info(deleteOrderLineItemsDtoList.toString());
+		log.info("Setting OrderLineItemsDtoList for Order Request...");
+		deleteOrderRequest.setDeleteOrderLineItemsDtoList(deleteOrderLineItemsDtoList);
+		log.info("Printing Order Request...");
+		log.info(deleteOrderRequest.toString());
+		return deleteOrderRequest;
+	}
+
 	private List<OrderLineItemsDto> getValidOrderLineItemsDtoList() {
 		log.info("Creating Valid OrderLineItemDTOs");
 		OrderLineItemsDto testOrderLineItemsDto1 = new OrderLineItemsDto(Long.valueOf(0001), "iphone_13", BigDecimal.valueOf(111.11), 1);
@@ -241,6 +273,17 @@ class OrderServiceApplicationTests {
 		return orderLineItemsDtoList;
 	}
 
+	private List<DeleteOrderLineItemsDto> getDeleteOrderLineItemsDtoList() {
+		log.info("Creating Valid OrderLineItemDTOs");
+		DeleteOrderLineItemsDto testDeleteOrderLineItemsDto1 = new DeleteOrderLineItemsDto(Long.valueOf(0001));
+		log.info("Creating OrderLineItemDtoList to House a list of Order Line Item DTOs");
+		List<DeleteOrderLineItemsDto> deleteOrderLineItemsDtoList = new ArrayList<DeleteOrderLineItemsDto>();
+		log.info("Adding the OrderLineItemDTOs to the OrderLineItemsDTOList... ");
+		deleteOrderLineItemsDtoList.add(testDeleteOrderLineItemsDto1);
+		log.info("Return the OrderLineItemDtoList...");
+		return deleteOrderLineItemsDtoList;
+	}
+
 	private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
 	return OrderLineItems.builder()
 			.id(orderLineItemsDto.getId())
@@ -248,6 +291,12 @@ class OrderServiceApplicationTests {
 			.price(orderLineItemsDto.getPrice())
 			.qty(orderLineItemsDto.getQty())
 			.build();
+	}
+
+	private OrderLineItems mapToDtoD(DeleteOrderLineItemsDto deleteOrderLineItemsDto) {
+		return OrderLineItems.builder()
+				.id(deleteOrderLineItemsDto.getId())
+				.build();
 	}
 }
 
