@@ -140,9 +140,9 @@ class OrderServiceApplicationTests {
 		} catch (Exception e) {
 			log.info("Order Request Failed");
 		}
-		log.info("Asserting that there are 2 orders in the DB...");
+		log.info("Asserting that there are 0 orders in the DB...");
 		Assertions.assertEquals(0, orderRepository.count());
-		log.info("Asserted that there are 2 orders in the DB");
+		log.info("Asserted that there are 0 orders in the DB");
 	}
 
 	@Test
@@ -152,56 +152,42 @@ class OrderServiceApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.delete("/api/order"))
 				.andExpect(status().isOk());
 	}
-//
-//	@Test
-//	@Order(5)
-//	void shouldDeleteOrderByOrderId() throws Exception {
-//		log.info("Get Order Request...");
-//		OrderRequest orderRequest = getValidOrderRequest();
-//		log.info("Setting orderLineItems...");
-//		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-//				.stream()
-//				.map(this::mapToDto)
-//				.toList();
-//
-//		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
-//		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
-//		// Order 1
-//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.content(orderRequestString))
-//				.andExpect(status().isCreated());
-//		// Order 2
-//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/")
-//						.contentType(MediaType.APPLICATION_JSON)
-//						.content(orderRequestString))
-//				.andExpect(status().isCreated());
-//
-//
-//		log.info("Asserting that there are 2 orders in the DB...");
-//		Assertions.assertEquals(2, orderRepository.count());
-//		log.info("Asserted that there are 2 orders in the DB");
-//
-//
-//		log.info("Creating Delete Order Request...");
-//		DeleteOrderRequest deleteOrderRequest = getDeleteOrderRequest();
-//		log.info("Setting orderLineItems for Deletion...");
-//		List<OrderLineItems> deleteOrderLineItems = deleteOrderRequest.getDeleteOrderLineItemsDtoList()
-//				.stream()
-//				.map(this::mapToDtoD)
-//				.toList();
-//		log.info("Hitting /api/order with DELETE Request...");
-//		String deleteOrderRequestString = objectMapper.writeValueAsString(deleteOrderRequest);
-//		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/delete")
-//				.contentType(MediaType.APPLICATION_JSON)
-//				.content(deleteOrderRequestString))
-//				.andExpect(status().isOk());
-//
-//		log.info("Asserting that there is 1 order in the DB...");
-//		Assertions.assertEquals(1, orderRepository.count());
-//		log.info("Asserted that there is 1 order in the DB");
-//
-//	}
+
+	@Test
+	@Order(5)
+	void shouldDeleteOrderByOrderId() throws Exception {
+		log.info("Get Order Request...");
+		OrderRequest orderRequest = getValidOrderRequest();
+		log.info("Setting orderLineItems...");
+		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+				.stream()
+				.map(this::mapToDto)
+				.toList();
+
+		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
+		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+		log.info("Placing Order 1...");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(orderRequestString))
+				.andExpect(status().isCreated());
+
+		log.info("Asserting that there are 1 orders in the DB...");
+		Assertions.assertEquals(1, orderRepository.count());
+		log.info("Asserted that there are 1 orders in the DB");
+
+		// get the order ID of the order that was just placed
+		com.alex.orderservice.model.Order order = orderRepository.findAll().get(0);
+
+		log.info("Hitting /api/order/delete/{orderId} with DELETE Request...");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/delete/{orderId}", order.getId()))
+				.andExpect(status().isOk());
+		log.info("Asserting that there is 0 order in the DB...");
+		Assertions.assertEquals(0, orderRepository.count());
+		log.info("Asserted that there is 0 order in the DB");
+
+
+	}
 
 
 
