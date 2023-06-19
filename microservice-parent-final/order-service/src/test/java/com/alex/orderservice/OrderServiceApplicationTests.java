@@ -60,17 +60,18 @@ class OrderServiceApplicationTests {
 	@Autowired
 	private OrderRepository orderRepository;
 
+	// clear order repository before each test
+	@BeforeEach
+	public void clearOrderRepository() {
+		orderRepository.deleteAll();
+	}
+
 	@Test
 	@Order(1)
 	void shouldPlaceOrder() throws Exception {
 		log.info("Starting Test by clearing DB...");
 		log.info("Get Order Request...");
 		OrderRequest orderRequest = getValidOrderRequest();
-		log.info("Setting orderLineItems...");
-		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-				.stream()
-				.map(this::mapToDto)
-				.toList();
 		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
 		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
 		// Order 1
@@ -83,20 +84,12 @@ class OrderServiceApplicationTests {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(orderRequestString))
 				.andExpect(status().isCreated());
-
-		// Clear order repository
-		orderRepository.deleteAll();
 	}
 	@Test
 	@Order(2)
 	void shouldGetAllOrders() throws Exception {
 		log.info("Get Order Request...");
 		OrderRequest orderRequest = getValidOrderRequest();
-		log.info("Setting orderLineItems...");
-		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-				.stream()
-				.map(this::mapToDto)
-				.toList();
 		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
 		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
 		// Order 1
@@ -115,20 +108,12 @@ class OrderServiceApplicationTests {
 				.andExpect(status().isOk());
 		Assertions.assertEquals(2, orderRepository.count());
 		log.info("Got All {} Orders", orderRepository.count());
-
-		// Clear order repository
-		orderRepository.deleteAll();
 	}
 	@Test
 	@Order(3)
 	void shouldNotPlaceOrder() throws Exception {
 		log.info("Get Order Request...");
 		OrderRequest orderRequest = getInvalidOrderRequest();
-		log.info("Setting orderLineItems...");
-		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-				.stream()
-				.map(this::mapToDto)
-				.toList();
 		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
 		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
 		// Attempt Order Request
@@ -136,7 +121,7 @@ class OrderServiceApplicationTests {
 			mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
 							.contentType(MediaType.APPLICATION_JSON)
 							.content(orderRequestString))
-					.andExpect(status().isOk());
+					.andExpect(status().isNotFound());
 		} catch (Exception e) {
 			log.info("Order Request Failed");
 		}
@@ -158,12 +143,6 @@ class OrderServiceApplicationTests {
 	void shouldDeleteOrderByOrderId() throws Exception {
 		log.info("Get Order Request...");
 		OrderRequest orderRequest = getValidOrderRequest();
-		log.info("Setting orderLineItems...");
-		List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
-				.stream()
-				.map(this::mapToDto)
-				.toList();
-
 		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
 		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
 		log.info("Placing Order 1...");
@@ -180,16 +159,98 @@ class OrderServiceApplicationTests {
 		com.alex.orderservice.model.Order order = orderRepository.findAll().get(0);
 
 		log.info("Hitting /api/order/delete/{orderId} with DELETE Request...");
-		mockMvc.perform(MockMvcRequestBuilders.post("/api/order/delete/{orderId}", order.getId()))
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/order/{orderId}", order.getId()))
 				.andExpect(status().isOk());
 		log.info("Asserting that there is 0 order in the DB...");
 		Assertions.assertEquals(0, orderRepository.count());
 		log.info("Asserted that there is 0 order in the DB");
-
-
 	}
 
+	@Test
+	@Order(6)
+	void shouldNotDeleteOrderByOrderId() throws Exception {
+		log.info("Get Order Request...");
+		OrderRequest orderRequest = getValidOrderRequest();
+		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
+		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+		log.info("Placing Order 1...");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(orderRequestString))
+				.andExpect(status().isCreated());
 
+		log.info("Asserting that there are 1 orders in the DB...");
+		Assertions.assertEquals(1, orderRepository.count());
+		log.info("Asserted that there are 1 orders in the DB");
+
+		// get the order ID of the order that was just placed
+		com.alex.orderservice.model.Order order = orderRepository.findAll().get(0);
+
+		log.info("Hitting /api/order/delete/{orderId} with DELETE Request...");
+		mockMvc.perform(MockMvcRequestBuilders.delete("/api/order/{orderId}", order.getId()+1))
+				.andExpect(status().isOk());
+		log.info("Asserting that there is 1 order in the DB...");
+		Assertions.assertEquals(1, orderRepository.count());
+		log.info("Asserted that there is 1 order in the DB");
+	}
+
+	@Test
+	@Order(7)
+	void shouldGetOrderByOrderId() throws Exception {
+		log.info("Get Order Request...");
+		OrderRequest orderRequest = getValidOrderRequest();
+		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
+		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+		log.info("Placing Order 1...");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(orderRequestString))
+				.andExpect(status().isCreated());
+
+		log.info("Asserting that there are 1 orders in the DB...");
+		Assertions.assertEquals(1, orderRepository.count());
+		log.info("Asserted that there are 1 orders in the DB");
+
+		// get the order ID of the order that was just placed
+		com.alex.orderservice.model.Order order = orderRepository.findAll().get(0);
+
+		log.info("Hitting /api/order/{orderId} with GET Request...");
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/order/{orderId}", order.getId()))
+				.andExpect(status().isOk());
+	}
+
+	@Test
+	@Order(8)
+	void shouldNotGetOrderByOrderId() throws Exception {
+		log.info("Get Order Request...");
+		OrderRequest orderRequest = getValidOrderRequest();
+		log.info("Hitting /api/order with POST Request containing orderRequestString JSON");
+		String orderRequestString = objectMapper.writeValueAsString(orderRequest);
+		log.info("Placing Order 1...");
+		mockMvc.perform(MockMvcRequestBuilders.post("/api/order")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(orderRequestString))
+				.andExpect(status().isCreated());
+
+		log.info("Asserting that there are 1 orders in the DB...");
+		Assertions.assertEquals(1, orderRepository.count());
+		log.info("Asserted that there are 1 orders in the DB");
+
+		// get the order ID of the order that was just placed
+		com.alex.orderservice.model.Order order = orderRepository.findAll().get(0);
+
+		log.info("Hitting /api/order/{orderId} with GET Request...");
+		try {
+			mockMvc.perform(MockMvcRequestBuilders.get("/api/order/{orderId}", order.getId() + 1))
+					.andExpect(status().isNotFound());
+		} catch (Exception e) {
+			log.info("Get Order By ID Failed");
+		}
+		log.info("Asserting that there is 1 order in the DB...");
+		Assertions.assertEquals(1, orderRepository.count());
+		log.info("Asserted that there is 1 order in the DB");
+
+	}
 
 	private OrderRequest getValidOrderRequest() {
 		log.info("Creating new Valid Order Request...");
@@ -232,7 +293,6 @@ class OrderServiceApplicationTests {
 		log.info(deleteOrderRequest.toString());
 		return deleteOrderRequest;
 	}
-
 	private List<OrderLineItemsDto> getValidOrderLineItemsDtoList() {
 		log.info("Creating Valid OrderLineItemDTOs");
 		OrderLineItemsDto testOrderLineItemsDto1 = new OrderLineItemsDto(Long.valueOf(0001), "iphone_13", BigDecimal.valueOf(111.11), 1);
@@ -245,7 +305,6 @@ class OrderServiceApplicationTests {
 		log.info("Return the OrderLineItemDtoList...");
 		return orderLineItemsDtoList;
 	}
-
 	private List<OrderLineItemsDto> getInvalidOrderLineItemsDtoList() {
 		log.info("Creating Invalid OrderLineItemDTOs");
 		OrderLineItemsDto testOrderLineItemsDto1 = new OrderLineItemsDto(Long.valueOf(0001), "invalid_sku_1", BigDecimal.valueOf(111.11), 1);
@@ -258,7 +317,6 @@ class OrderServiceApplicationTests {
 		log.info("Return the OrderLineItemDtoList...");
 		return orderLineItemsDtoList;
 	}
-
 	private List<DeleteOrderLineItemsDto> getDeleteOrderLineItemsDtoList() {
 		log.info("Creating Valid OrderLineItemDTOs");
 		DeleteOrderLineItemsDto testDeleteOrderLineItemsDto1 = new DeleteOrderLineItemsDto(Long.valueOf(0001));
@@ -268,21 +326,6 @@ class OrderServiceApplicationTests {
 		deleteOrderLineItemsDtoList.add(testDeleteOrderLineItemsDto1);
 		log.info("Return the OrderLineItemDtoList...");
 		return deleteOrderLineItemsDtoList;
-	}
-
-	private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
-	return OrderLineItems.builder()
-			.id(orderLineItemsDto.getId())
-			.skuCode(orderLineItemsDto.getSkuCode())
-			.price(orderLineItemsDto.getPrice())
-			.qty(orderLineItemsDto.getQty())
-			.build();
-	}
-
-	private OrderLineItems mapToDtoD(DeleteOrderLineItemsDto deleteOrderLineItemsDto) {
-		return OrderLineItems.builder()
-				.id(deleteOrderLineItemsDto.getId())
-				.build();
 	}
 }
 

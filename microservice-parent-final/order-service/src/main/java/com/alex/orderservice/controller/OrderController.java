@@ -44,7 +44,7 @@ public class OrderController {
         orderService.deleteAllOrders();
     }
 
-    @PostMapping("/delete/{orderId}")
+    @DeleteMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteOrderById(@PathVariable Long orderId) throws OrderIdNotFoundException {
         orderService.deleteOrderById(orderId);
