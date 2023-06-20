@@ -4,9 +4,7 @@ import com.alex.orderservice.dto.DeleteOrderLineItemsDto;
 import com.alex.orderservice.dto.DeleteOrderRequest;
 import com.alex.orderservice.dto.OrderLineItemsDto;
 import com.alex.orderservice.dto.OrderRequest;
-import com.alex.orderservice.model.OrderLineItems;
 import com.alex.orderservice.repository.OrderRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -48,8 +46,11 @@ class OrderServiceApplicationTests {
 			.withUsername("root")
 			.withPassword("admin");
 
+
 	@BeforeAll
 	public void initDatabaseProperties() {
+		//log
+		log.info("Setting up database properties...");
 		System.setProperty("spring.datasource.url", mysql.getJdbcUrl());
 		System.setProperty("spring.datasource.username", mysql.getUsername());
 		System.setProperty("spring.datasource.password", mysql.getPassword());
@@ -59,7 +60,13 @@ class OrderServiceApplicationTests {
 	private ObjectMapper objectMapper;
 	@Autowired
 	private OrderRepository orderRepository;
-
+	// wait a moment for the app to start
+	@BeforeAll
+	public void waitAMoment() throws InterruptedException {
+		log.info("Waiting for the app to start...");
+		Thread.sleep(100000);
+	}
+	// get valid order request
 	// clear order repository before each test
 	@BeforeEach
 	public void clearOrderRepository() {

@@ -126,4 +126,25 @@ public class InventoryService {
                 .qty(inventory.getQty())
                 .build();
     }
+
+    public void deleteInventory(String sC) {
+        log.info("Deleting Inventory for " + sC);
+        inventoryRepository.deleteBySkuCode(sC);
+
+    }
+
+    public InventoryResponse getInventoryBySkuCode(String skuCode) throws SkuCodeNotFoundException {
+        log.info("Getting Inventory for " + skuCode);
+        Inventory inventory = inventoryRepository.findBySkuCode(skuCode);
+        return InventoryResponse.builder()
+                .skuCode(inventory.getSkuCode())
+                .isInStock(inventory.getQty() > 0)
+                .qty(inventory.getQty())
+                .build();
+    }
+
+    public void deleteAllInventories() {
+        log.info("Deleting all Inventories...");
+        inventoryRepository.deleteAll();
+    }
 }

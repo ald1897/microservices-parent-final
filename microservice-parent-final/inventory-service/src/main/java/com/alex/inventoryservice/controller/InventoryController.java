@@ -28,10 +28,10 @@ public class InventoryController {
         return inventoryService.getAllInventories();
     }
 
-    @RequestMapping("/home")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public String home() {
-        return "Hello World, Welcome to the Inventory Service Home Page!";
+    public InventoryResponse getInventoryBySkuCode(@RequestParam String skuCode) throws SkuCodeNotFoundException {
+        return inventoryService.getInventoryBySkuCode(skuCode);
     }
 
     @GetMapping
@@ -58,5 +58,22 @@ public class InventoryController {
     public void addInventory(@RequestBody InventoryRequest inventoryRequest) {
 //        Update the inventory based on the sku code
         inventoryService.addInventory(inventoryRequest);
+    }
+
+    @RequestMapping("/delete")
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteInventory(@RequestParam String sC) throws SkuCodeNotFoundException {
+//        Update the inventory based on the sku code
+        inventoryService.deleteInventory(sC);
+    }
+
+    @RequestMapping("deleteAll")
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteAllInventory() {
+//        Update the inventory based on the sku code
+        inventoryService.deleteAllInventories();
+
     }
 }

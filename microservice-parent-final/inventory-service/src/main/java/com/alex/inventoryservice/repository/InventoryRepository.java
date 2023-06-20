@@ -10,4 +10,6 @@ import java.util.Optional;
 public interface InventoryRepository extends JpaRepository<Inventory, Long >{
     Inventory findBySkuCode(String skuCode) throws SkuCodeNotFoundException;
     List<Inventory> findBySkuCodeIn(List<String> skuCode) throws SkuCodeNotFoundException;
+    void deleteBySkuCode(String sC);
+
 }
