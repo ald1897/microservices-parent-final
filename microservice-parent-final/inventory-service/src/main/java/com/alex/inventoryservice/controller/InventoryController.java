@@ -1,6 +1,5 @@
 package com.alex.inventoryservice.controller;
 
-
 import com.alex.inventoryservice.dto.InventoryRequest;
 import com.alex.inventoryservice.dto.InventoryResponse;
 import com.alex.inventoryservice.service.InventoryService;
@@ -28,15 +27,17 @@ public class InventoryController {
         return inventoryService.getAllInventories();
     }
 
+    @RequestMapping("/item")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public InventoryResponse getInventoryBySkuCode(@RequestParam String skuCode) throws SkuCodeNotFoundException {
         return inventoryService.getInventoryBySkuCode(skuCode);
     }
 
+    @RequestMapping("/check_stock")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode,@RequestParam List<Integer> qty) {
+    public List<InventoryResponse> isInStock(@RequestParam List<String> skuCode, @RequestParam List<Integer> qty) {
         Iterator<String> it1 = skuCode.iterator();
         Iterator<Integer> it2 = qty.iterator();
         Multimap<String, Integer> map = ArrayListMultimap.create();
@@ -46,6 +47,7 @@ public class InventoryController {
         return inventoryService.isInStock(map);
     }
 
+    @RequestMapping("/update")
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void updateInventory(@RequestParam String skuCode, @RequestParam Integer qty) throws SkuCodeNotFoundException {
@@ -63,17 +65,9 @@ public class InventoryController {
     @RequestMapping("/delete")
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public void deleteInventory(@RequestParam String sC) throws SkuCodeNotFoundException {
+    public void deleteInventory(@RequestParam String skuCode) throws SkuCodeNotFoundException {
 //        Update the inventory based on the sku code
-        inventoryService.deleteInventory(sC);
+        inventoryService.deleteInventory(skuCode);
     }
 
-    @RequestMapping("deleteAll")
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteAllInventory() {
-//        Update the inventory based on the sku code
-        inventoryService.deleteAllInventories();
-
-    }
 }

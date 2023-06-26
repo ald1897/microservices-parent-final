@@ -110,7 +110,7 @@ public class OrderService {
        log.info("Inventory Response Array: " + Arrays.toString(inventoryResponseArray));
         try {
             inventoryResponseArray = webClientBuilder.build().get()
-                    .uri("http://inventory-service/api/inventory",
+                    .uri("http://inventory-service/api/inventory/check_stock",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCodes).queryParam("qty", qtys).build())
                     .retrieve()
                     .bodyToMono(InventoryResponse[].class)
@@ -149,9 +149,9 @@ public class OrderService {
             Integer qty = (Integer) entry.getValue();
 
             // Send a post request to inventory service with the skuCode and qty to be deducted
-            log.info("Sending POST Request to inventory-service/api/inventory?skuCode=skuCode&qty=qty for skuCode: " + skuCode + " and qty: " + qty + "");
+            log.info("Sending POST Request to inventory-service/api/inventory/update?skuCode=skuCode&qty=qty for skuCode: " + skuCode + " and qty: " + qty + "");
             InventoryUpdate inventoryUpdate = webClientBuilder.build().post()
-                    .uri("http://inventory-service/api/inventory",
+                    .uri("http://inventory-service/api/inventory/update",
                             uriBuilder -> uriBuilder.queryParam("skuCode", skuCode).queryParam("qty", qty).build())
                     .retrieve()
                     .bodyToMono(InventoryUpdate.class)
@@ -189,13 +189,6 @@ public class OrderService {
         return OrderResponse.builder()
                 .orderLineItemsList(order.getOrderLineItemsList())
                 .build();
-    }
-    public void deleteAllOrders() {
-        Long count = orderRepository.count();
-        log.info("Deleting All {} Orders", count);
-        orderRepository.deleteAll();
-        log.info("Orders Deleted.", count);
-
     }
     public void deleteOrderById(Long orderId) throws OrderIdNotFoundException{
        Optional<Order> order = orderRepository.findById(orderId);

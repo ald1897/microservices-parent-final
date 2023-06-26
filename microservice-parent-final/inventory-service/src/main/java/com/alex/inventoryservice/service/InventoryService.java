@@ -127,12 +127,16 @@ public class InventoryService {
                 .build();
     }
 
+    @Transactional()
+    @SneakyThrows
     public void deleteInventory(String sC) {
         log.info("Deleting Inventory for " + sC);
         inventoryRepository.deleteBySkuCode(sC);
 
     }
 
+    @Transactional(readOnly = true)
+    @SneakyThrows
     public InventoryResponse getInventoryBySkuCode(String skuCode) throws SkuCodeNotFoundException {
         log.info("Getting Inventory for " + skuCode);
         Inventory inventory = inventoryRepository.findBySkuCode(skuCode);
@@ -143,8 +147,4 @@ public class InventoryService {
                 .build();
     }
 
-    public void deleteAllInventories() {
-        log.info("Deleting all Inventories...");
-        inventoryRepository.deleteAll();
-    }
 }

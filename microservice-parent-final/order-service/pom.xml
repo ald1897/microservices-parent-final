@@ -17,24 +17,25 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>com.alex</groupId>-->
-<!--            <artifactId>inventory-service</artifactId>-->
-<!--            <version>1.0-SNAPSHOT</version>-->
-<!--            &lt;!&ndash;            <scope>system</scope>&ndash;&gt;-->
-<!--            &lt;!&ndash;            <systemPath>\microservices-parent-final\inventory-service\target\inventory-service-1.0-SNAPSHOT.jar</systemPath>&ndash;&gt;-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.alex</groupId>
+            <artifactId>inventory-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
+            <version>3.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
@@ -75,10 +76,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security</groupId>-->
-<!--            <artifactId>spring-security-oauth2-client</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>5.3.25</version>
+        </dependency>
 
     </dependencies>
 
