@@ -32,6 +32,13 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public String updateOrder(@RequestBody OrderRequest orderRequest){
+        orderService.updateOrder(orderRequest);
+        return "Order Placed Successfully for " + orderRequest.getOrderLineItemsDtoList().size() + " items in the amount of $ " + orderRequest.getOrderLineItemsDtoList().stream().mapToDouble(orderLineItemsDto -> orderLineItemsDto.getPrice().doubleValue()).sum() + "";
+    }
+
     @GetMapping("/{orderId}")
     @ResponseStatus(HttpStatus.OK)
     public OrderResponse getOrderById(@PathVariable Long orderId) throws OrderIdNotFoundException {

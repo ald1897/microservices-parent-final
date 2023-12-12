@@ -10,4 +10,11 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class OrderRequest { private List<OrderLineItemsDto> orderLineItemsDtoList; }
+public class OrderRequest { private List<OrderLineItemsDto> orderLineItemsDtoList;
+
+    public Long getId() {
+        // get the id from the orderLineItemsDtoList
+        return orderLineItemsDtoList.get(0).getId();
+
+    }
+}
